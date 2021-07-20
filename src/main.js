@@ -19,6 +19,7 @@ function init(canvas, img) {
 }
 
 function quntization(colors, maxBuckets = 4) {
+  // maxBuckets = Math.sqrt(maxBuckets);
   if (maxBuckets <= 0) {
     // get bucket avrage
     return bucketAvrage(colors);
@@ -35,10 +36,8 @@ function quntization(colors, maxBuckets = 4) {
   const bucketPair = divideBucket(sortedColors);
 
   // console.log(ctx, colors, colorChannelRange, largestChannel, sortedColors);
-  return [
-    quntization(bucketPair[0], maxBuckets - 1),
-    quntization(bucketPair[1], maxBuckets - 1),
-  ].flat();
+  // [q(), q()].flat()
+  return bucketPair.map((elt) => quntization(elt, maxBuckets - 1)).flat();
 }
 
 function createColorChannels(colorArray) {
@@ -101,11 +100,27 @@ function sortChannel(colors, channel) {
   return colors.sort((a, b) => a[channel] - b[channel]);
 }
 
-function divideBucket(bucket) {
-  const midPoint = bucket.length / 2;
-  const start = bucket.slice(0, midPoint);
-  const end = bucket.slice(midPoint);
+function divideBucket(bucket, times = 2) {
+  const cutPoints = Math.floor(bucket.length / times);
+  const start = bucket.slice(0, cutPoints);
+  const end = bucket.slice(cutPoints);
   return [start, end];
+
+  // const groups = [];
+  // for (let i = 0; i < times; i++) {
+  //   let range = Math.floor(bucket.length / times) * i;
+  //   let part;
+
+  //   if (i + 1 === times) {
+  //     part = bucket.slice(range, range + bucket.length);
+  //   } else {
+  //     part = bucket.slice(range, range + times);
+  //   }
+
+  //   groups.push(part);
+  // }
+
+  // return groups;
 }
 
 function bucketAvrage(bucket) {
@@ -126,7 +141,7 @@ function bucketAvrage(bucket) {
 }
 
 const imgs = new Image();
-imgs.src = "img3.jpg";
+imgs.src = "img2.jpg";
 imgs.onload = () => {
   const palette = init(document.querySelector("canvas"), imgs);
   createWheel(palette);
